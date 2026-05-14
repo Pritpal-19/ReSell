@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReSell - My Wishlist</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="favicon.svg">
+
+    <style>
+        :root {
+            --nav-bg: #ffffff;
+            --nav-text: rgba(32, 41, 58, 1);
+            --nav-border: #e2e8f0;
+            --body-bg: #0b1120;
+            --body-text: #f8fafc;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --text-muted: #94a3b8;
+            --primary-green: rgba(76, 161, 84, 1);
+            --shadow-glow: 0 8px 25px rgba(6, 182, 212, 0.3);
+        }
+
+        [data-theme="inverse"] {
+            --nav-bg: #0b1120;
+            --nav-text: #f8fafc;
+            --nav-border: #334155;
+            --body-bg: #f8fafc;
+            --body-text: rgba(32, 41, 58, 1);
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--body-text);
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background-color: var(--nav-bg);
+            border-bottom: 2px solid var(--nav-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .back-btn {
+            color: var(--nav-text);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -1px;
+            color: var(--nav-text);
+        }
+
+        .logo span,
+        .logo i,
+        .back-btn:hover {
+            color: var(--primary-green);
+        }
+
+        .theme-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid var(--nav-border);
+            background: transparent;
+            color: var(--nav-text);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover {
+            transform: rotate(45deg);
+            border-color: var(--primary-green);
+            color: var(--primary-green);
+        }
+
+        /* Container & Grid Styling */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            min-height: 60vh;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            margin-bottom: 30px;
+            font-weight: 900;
+        }
+
+        .page-header i {
+            color: #ef4444;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--primary-green);
+        }
+
+        .product-img {
+            height: 180px;
+            background: rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .product-img img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .product-info {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--body-text);
+        }
+
+        .product-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .product-meta {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-top: 1px solid var(--card-border);
+            padding-top: 12px;
+        }
+
+        /* Remove from Wishlist Button Overlay */
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .remove-btn:hover {
+            background: #ef4444;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: var(--card-border);
+        }
+
+        .empty-state h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: var(--body-text);
+        }
+
+        .empty-state a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            background: var(--primary-green);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 15px;
+            }
+
+            .product-img {
+                height: 140px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        <a href="home.html" class="logo">
+            <i class="fas fa-shopping-basket"></i>
+            <div>RE<span>SELL</span></div>
+        </a>
+        <button class="theme-btn" id="themeToggle" title="Change Theme"></button>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <i class="fas fa-heart"></i> My Wishlist
+        </div>
+
+        <div class="product-grid" id="wishlistGrid">
+            <p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">Loading your wishlist...</p>
+        </div>
+    </div>
+
+    <script>
+        // 1. Theme Logic
+        const htmlElement = document.documentElement;
+        if (localStorage.getItem('siteTheme') === 'inverse') htmlElement.setAttribute('data-theme', 'inverse');
+
+        // ==========================================
+        // 2. CHECK LOGIN & SECURITY
+        // ==========================================
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        const userEmail = localStorage.getItem('userEmail');
+
+        if (isLoggedIn !== 'true' || !userEmail) {
+            alert("Please login to view your wishlist!");
+            window.location.href = 'login.html';
+        } else {
+            // Agar login hai, taan hi wishlist load karo
+            loadWishlist();
+        }
+
+        let wishlistProducts = [];
+
+        async function loadWishlist() {
+            const grid = document.getElementById('wishlistGrid');
+            try {
+                const response = await fetch('http://localhost:3000/api/get-wishlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    wishlistProducts = data.products;
+
+                    if (wishlistProducts.length === 0) {
+                        grid.innerHTML = `
+                            <div class="empty-state" style="grid-column: 1 / -1;">
+                                <i class="far fa-heart"></i>
+                                <h3>Your wishlist is empty</h3>
+                                <p>Looks like you haven't saved any items yet.</p>
+                                <a href="home.html">Explore Products</a>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    grid.innerHTML = '';
+                    wishlistProducts.forEach((p, index) => {
+                        grid.innerHTML += `
+                        <div class="product-card" onclick="viewProduct(${index})">
+                            <button class="remove-btn" title="Remove from wishlist" onclick="removeFromWishlist(event, '${p._id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <div class="product-img"><img src="${p.img}" alt="${p.title}"></div>
+                            <div class="product-info">
+                                <div class="product-price">₹ ${Number(p.price).toLocaleString('en-IN')}</div>
+                                <div class="product-title">${p.title}</div>
+                                <div class="product-meta">
+                                    <span><i class="fas fa-map-marker-alt" style="color:var(--primary-green)"></i> ${p.loc}</span>
+                                    <span>${p.date || 'Recently added'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    });
+                } else {
+                    grid.innerHTML = '<p style="text-align: center; color: red;">Failed to load wishlist.</p>';
+                }
+            } catch (err) {
+                grid.innerHTML = '<p style="text-align: center; color: red;">Server Error. Is backend running?</p>';
+            }
+        }
+
+        function viewProduct(index) {
+            const selectedProduct = wishlistProducts[index];
+            localStorage.setItem('currentProduct', JSON.stringify(selectedProduct));
+            window.location.href = 'product.html';
+        }
+
+        async function removeFromWishlist(event, productId) {
+            event.stopPropagation();
+            if (confirm("Remove this item from wishlist?")) {
+                try {
+                    const response = await fetch('http://localhost:3000/api/toggle-wishlist', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: userEmail, productId: productId })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        loadWishlist();
+                    }
+                } catch (err) {
+                    alert("Error removing item.");
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
