@@ -251,7 +251,57 @@
             font-weight: bold;
         }
 
+        /* =========================================
+           TOAST NOTIFICATION STYLES (NAVA)
+           ========================================= */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: var(--primary-green);
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px 20px;
+            position: fixed;
+            z-index: 2000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 15px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.4s ease, bottom 0.4s ease;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        /* =========================================
+           RESPONSIVE MEDIA QUERIES (NAVA)
+           ========================================= */
         @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .container {
+                margin-top: 20px;
+                padding: 0 15px;
+            }
+
+            .page-header {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+
             .product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
                 gap: 15px;
@@ -259,6 +309,50 @@
 
             .product-img {
                 height: 140px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .product-card {
+                border-radius: 8px;
+            }
+
+            .product-img {
+                height: 110px;
+                padding: 5px;
+            }
+
+            .product-info {
+                padding: 10px;
+            }
+
+            .product-price {
+                font-size: 15px;
+                margin-bottom: 4px;
+            }
+
+            .product-title {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+
+            .product-meta {
+                font-size: 9px;
+                padding-top: 8px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .remove-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
             }
         }
     </style>
@@ -285,22 +379,55 @@
         </div>
     </div>
 
+    <div id="toast"></div>
+
     <script>
-        // 1. Theme Logic
-        const htmlElement = document.documentElement;
-        if (localStorage.getItem('siteTheme') === 'inverse') htmlElement.setAttribute('data-theme', 'inverse');
+        // ==========================================
+        // TOAST NOTIFICATION LOGIC
+        // ==========================================
+        function showToast(message, isError = false) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.style.backgroundColor = isError ? "#ef4444" : "var(--primary-green)";
+            toast.classList.add("show");
+            setTimeout(() => { toast.classList.remove("show"); }, 3000);
+        }
 
         // ==========================================
-        // 2. CHECK LOGIN & SECURITY
+        // Theme Logic
+        // ==========================================
+        const htmlElement = document.documentElement;
+        const themeToggleBtn = document.getElementById('themeToggle');
+
+        function applyTheme(themeName) {
+            if (themeName === 'inverse') {
+                htmlElement.setAttribute('data-theme', 'inverse');
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                htmlElement.removeAttribute('data-theme');
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        }
+
+        let currentTheme = localStorage.getItem('siteTheme') || 'default';
+        applyTheme(currentTheme);
+
+        themeToggleBtn.addEventListener('click', () => {
+            currentTheme = (currentTheme === 'inverse') ? 'default' : 'inverse';
+            localStorage.setItem('siteTheme', currentTheme);
+            applyTheme(currentTheme);
+        });
+
+        // ==========================================
+        // CHECK LOGIN & SECURITY
         // ==========================================
         const isLoggedIn = localStorage.getItem('isLoggedIn');
         const userEmail = localStorage.getItem('userEmail');
 
         if (isLoggedIn !== 'true' || !userEmail) {
-            alert("Please login to view your wishlist!");
+            // Cannot show toast here easily as it redirects immediately, alert is fine or silent redirect
             window.location.href = 'login.html';
         } else {
-            // Agar login hai, taan hi wishlist load karo
             loadWishlist();
         }
 
@@ -353,9 +480,11 @@
                     });
                 } else {
                     grid.innerHTML = '<p style="text-align: center; color: red;">Failed to load wishlist.</p>';
+                    showToast("Failed to load wishlist.", true);
                 }
             } catch (err) {
                 grid.innerHTML = '<p style="text-align: center; color: red;">Server Error. Is backend running?</p>';
+                showToast("Server connection error!", true);
             }
         }
 
@@ -367,21 +496,24 @@
 
         async function removeFromWishlist(event, productId) {
             event.stopPropagation();
-            if (confirm("Remove this item from wishlist?")) {
-                try {
-                    const response = await fetch('http://localhost:3000/api/toggle-wishlist', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: userEmail, productId: productId })
-                    });
 
-                    const data = await response.json();
-                    if (data.success) {
-                        loadWishlist();
-                    }
-                } catch (err) {
-                    alert("Error removing item.");
+            // Replaced confirm with direct action + toast for better UX
+            try {
+                const response = await fetch('http://localhost:3000/api/toggle-wishlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail, productId: productId })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showToast("Item removed from wishlist!");
+                    loadWishlist(); // Reload the grid
+                } else {
+                    showToast("Failed to remove item.", true);
                 }
+            } catch (err) {
+                showToast("Error removing item.", true);
             }
         }
     </script>

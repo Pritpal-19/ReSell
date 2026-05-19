@@ -46,6 +46,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         .auth-header {
@@ -206,6 +207,7 @@
             font-size: 14px;
             font-weight: 500;
             outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .input-group input:focus {
@@ -240,11 +242,18 @@
             align-items: center;
             gap: 10px;
             margin-top: 10px;
+            transition: all 0.3s ease;
         }
 
         .submit-btn:hover {
             background: var(--primary-green);
             color: white;
+        }
+
+        .submit-btn:disabled {
+            background: var(--card-border);
+            color: var(--text-muted);
+            cursor: not-allowed;
         }
 
         .forgot-link {
@@ -260,6 +269,95 @@
 
         .forgot-link:hover {
             color: var(--primary-green);
+        }
+
+        /* =========================================
+           TOAST NOTIFICATION STYLES
+           ========================================= */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: var(--primary-green);
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px 20px;
+            position: fixed;
+            z-index: 2000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 15px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.4s ease, bottom 0.4s ease;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        /* =========================================
+           RESPONSIVE MEDIA QUERIES
+           ========================================= */
+        @media (max-width: 768px) {
+            .auth-header {
+                padding: 15px 20px;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .auth-wrapper {
+                padding: 15px;
+            }
+
+            .auth-card {
+                padding: 25px 20px;
+            }
+
+            .auth-title {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 20px 15px;
+                border-radius: 12px;
+                border: none;
+                box-shadow: none;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .auth-title {
+                font-size: 20px;
+            }
+
+            .submit-btn {
+                padding: 12px;
+                font-size: 15px;
+            }
+
+            .input-group input {
+                padding: 12px 40px;
+                font-size: 13px;
+            }
+
+            .input-group>i:first-child {
+                left: 12px;
+            }
+
+            .eye-btn {
+                right: 12px;
+            }
         }
     </style>
 </head>
@@ -298,7 +396,8 @@
                                 class="fas fa-eye"></i></button>
                     </div>
                     <a href="#" class="forgot-link" onclick="switchForm('forgot')">Forgot Password?</a>
-                    <button type="submit" class="submit-btn">Login <i class="fas fa-arrow-right"></i></button>
+                    <button type="submit" class="submit-btn" id="loginBtn">Login <i
+                            class="fas fa-arrow-right"></i></button>
                 </form>
             </div>
 
@@ -326,12 +425,24 @@
         </div>
     </div>
 
+    <div id="toast"></div>
+
     <script>
         if (localStorage.getItem('siteTheme') === 'inverse') document.documentElement.setAttribute('data-theme', 'inverse');
 
+        // ==========================================
+        // TOAST NOTIFICATION LOGIC
+        // ==========================================
+        function showToast(message, isError = false) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.style.backgroundColor = isError ? "#ef4444" : "var(--primary-green)";
+            toast.classList.add("show");
+            setTimeout(() => { toast.classList.remove("show"); }, 3000);
+        }
+
         function switchForm(type) {
             const slider = document.getElementById('toggleSlider');
-            const toggleGroup = document.getElementById('mainToggleGroup');
 
             document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
             document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
@@ -341,7 +452,7 @@
                 document.getElementById('toggleSignup').classList.add('active');
                 document.getElementById('signupSection').classList.add('active');
                 document.getElementById('formTitle').innerText = "Create Account";
-                document.getElementById('formSubtitle').innerText = "Join Re-sell securely today";
+                document.getElementById('formSubtitle').innerText = "Join ReSell securely today";
             } else {
                 slider.classList.remove('slider-right');
                 document.getElementById('toggleLogin').classList.add('active');
@@ -359,12 +470,16 @@
         }
 
         // ==========================================
-        // LOGIN LOGIC (FIXED EMAIL SAVING)
+        // LOGIN LOGIC
         // ==========================================
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPass').value;
+            const btn = document.getElementById('loginBtn');
+
+            btn.innerHTML = 'Logging in... <i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
 
             try {
                 const res = await fetch('http://localhost:3000/api/login', {
@@ -373,17 +488,26 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    // SAARI DETAILS PAKKE TAUR TE SAVE KITIYAN
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('userName', data.userName);
                     localStorage.setItem('userEmail', email);
 
-                    alert(`Welcome back, ${data.userName}!`);
-                    window.location.href = 'home.html';
+                    showToast(`Welcome back, ${data.userName}!`);
+
+                    // Thoda ja delay deke redirect kitta taaki toast dikhe
+                    setTimeout(() => {
+                        window.location.href = 'home.html';
+                    }, 1500);
                 } else {
-                    alert(data.message);
+                    showToast(data.message, true);
+                    btn.innerHTML = 'Login <i class="fas fa-arrow-right"></i>';
+                    btn.disabled = false;
                 }
-            } catch (err) { alert("Server error"); }
+            } catch (err) {
+                showToast("Server connection error! Please ensure backend is running.", true);
+                btn.innerHTML = 'Login <i class="fas fa-arrow-right"></i>';
+                btn.disabled = false;
+            }
         });
 
         // ==========================================
@@ -394,19 +518,37 @@
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPass').value;
+            const btn = document.getElementById('createAccountBtn');
 
-            // Simple signup without OTP for fast testing
+            btn.innerHTML = 'Creating... <i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
             try {
                 const res = await fetch('http://localhost:3000/api/register', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, password, otp: "123456" }) // Bypass OTP strictly for smooth flow if OTP is disabled, otherwise ensure your OTP logic is added here.
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, password, otp: "123456" })
                 });
                 const data = await res.json();
-                alert(data.message);
+
                 if (data.success) {
+                    showToast(data.message);
                     document.getElementById('signupForm').reset();
-                    switchForm('login');
+
+                    // Thoda delay deke login form te bhejo
+                    setTimeout(() => {
+                        switchForm('login');
+                        btn.innerHTML = 'Create Account <i class="fas fa-arrow-right"></i>';
+                        btn.disabled = false;
+                    }, 1500);
+                } else {
+                    showToast(data.message, true);
+                    btn.innerHTML = 'Create Account <i class="fas fa-arrow-right"></i>';
+                    btn.disabled = false;
                 }
-            } catch (err) { alert("Server error"); }
+            } catch (err) {
+                showToast("Server connection error! Please ensure backend is running.", true);
+                btn.innerHTML = 'Create Account <i class="fas fa-arrow-right"></i>';
+                btn.disabled = false;
+            }
         });
     </script>
 </body>

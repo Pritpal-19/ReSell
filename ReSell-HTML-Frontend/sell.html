@@ -9,14 +9,13 @@
 
     <style>
         /* =========================================
-           THEMES (Synced with Home Page)
+           THEMES
            ========================================= */
         :root {
             --nav-bg: #ffffff;
             --nav-text: rgba(32, 41, 58, 1);
             --nav-border: #e2e8f0;
             --input-bg: #f8fafc;
-
             --body-bg: #0b1120;
             --body-text: #f8fafc;
             --card-bg: #1e293b;
@@ -24,7 +23,6 @@
             --text-muted: #94a3b8;
             --primary-green: rgba(76, 161, 84, 1);
             --shadow-glow: 0 8px 25px rgba(6, 182, 212, 0.3);
-            --hover-border: #06b6d4;
         }
 
         [data-theme="inverse"] {
@@ -32,14 +30,10 @@
             --nav-text: #f8fafc;
             --nav-border: #334155;
             --input-bg: #ffffff;
-
             --body-bg: #f8fafc;
             --body-text: rgba(32, 41, 58, 1);
             --card-bg: #ffffff;
             --card-border: #e2e8f0;
-            --text-muted: #64748b;
-            --shadow-glow: 0 8px 25px rgba(76, 161, 84, 0.2);
-            --hover-border: rgba(76, 161, 84, 1);
         }
 
         * {
@@ -55,7 +49,6 @@
             transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        /* ----- Navbar Styling ----- */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -66,7 +59,6 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            transition: all 0.4s ease;
         }
 
         .back-btn {
@@ -77,11 +69,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: color 0.3s;
-        }
-
-        .back-btn:hover {
-            color: var(--primary-green);
         }
 
         .logo {
@@ -95,11 +82,9 @@
             color: var(--nav-text);
         }
 
-        .logo i {
-            color: var(--primary-green);
-        }
-
-        .logo span {
+        .logo span,
+        .logo i,
+        .back-btn:hover {
             color: var(--primary-green);
         }
 
@@ -115,16 +100,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
         }
 
-        .theme-btn:hover {
-            transform: rotate(45deg);
-            border-color: var(--primary-green);
-            color: var(--primary-green);
-        }
-
-        /* ----- Sell Form Container ----- */
         .container {
             max-width: 800px;
             margin: 40px auto;
@@ -150,7 +127,6 @@
             border-radius: 16px;
             padding: 40px;
             box-shadow: var(--shadow-glow);
-            transition: all 0.4s ease;
         }
 
         .page-title {
@@ -214,7 +190,6 @@
             box-shadow: 0 0 0 4px rgba(76, 161, 84, 0.1);
         }
 
-        /* Image Upload Box */
         .upload-box {
             border: 2px dashed var(--text-muted);
             border-radius: 12px;
@@ -222,56 +197,18 @@
             text-align: center;
             cursor: pointer;
             background: var(--input-bg);
-            transition: all 0.3s ease;
             position: relative;
         }
 
         .upload-box.error-border {
             border-color: #ef4444;
             background: rgba(239, 68, 68, 0.05);
-            animation: shake 0.4s ease-in-out;
-        }
-
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-5px);
-            }
-
-            50% {
-                transform: translateX(5px);
-            }
-
-            75% {
-                transform: translateX(-5px);
-            }
-        }
-
-        .upload-box:hover {
-            border-color: var(--primary-green);
-            background: rgba(76, 161, 84, 0.05);
         }
 
         .upload-box i {
             font-size: 40px;
             color: var(--text-muted);
             margin-bottom: 10px;
-            transition: color 0.3s ease;
-        }
-
-        .upload-box:hover i {
-            color: var(--primary-green);
-        }
-
-        .upload-box p {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-muted);
         }
 
         .upload-box input[type="file"] {
@@ -284,7 +221,6 @@
             cursor: pointer;
         }
 
-        /* Image Previews */
         .preview-container {
             display: flex;
             flex-wrap: wrap;
@@ -298,7 +234,6 @@
             border-radius: 8px;
             object-fit: cover;
             border: 2px solid var(--card-border);
-            position: relative;
         }
 
         .img-wrapper {
@@ -309,21 +244,18 @@
             position: absolute;
             top: -5px;
             right: -5px;
-            background: red;
+            background: #ef4444;
             color: white;
             border: none;
             border-radius: 50%;
             width: 22px;
             height: 22px;
-            font-size: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
-        /* Submit Button */
         .submit-btn {
             width: 100%;
             padding: 16px;
@@ -337,7 +269,6 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 10px;
-            letter-spacing: 1px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -348,7 +279,6 @@
             background: var(--primary-green);
             color: white;
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(76, 161, 84, 0.4);
         }
 
         .submit-btn:disabled {
@@ -358,29 +288,50 @@
             transform: none;
         }
 
-        @media (max-width: 768px) {
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-
-            .sell-card {
-                padding: 20px;
-            }
+        /* =========================================
+           TOAST NOTIFICATION STYLES (NAVA)
+           ========================================= */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: var(--primary-green);
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px 20px;
+            position: fixed;
+            z-index: 2000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 15px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.4s ease, bottom 0.4s ease;
         }
 
-        /* ==================================================
-           RESPONSIVE DESIGN (MOBILE & TABLET)
-           ================================================== */
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        /* =========================================
+           RESPONSIVE MEDIA QUERIES (NAVA)
+           ========================================= */
         @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
             .container {
                 margin-top: 20px;
                 padding: 0 15px;
-            }
-
-            .form-row {
-                flex-direction: column;
-                gap: 0;
             }
 
             .sell-card {
@@ -391,6 +342,11 @@
             .page-title {
                 font-size: 24px;
                 margin-bottom: 20px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
             }
 
             .upload-box {
@@ -407,6 +363,19 @@
             select,
             textarea {
                 padding: 12px;
+                font-size: 14px;
+            }
+
+            .submit-btn {
+                padding: 14px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .preview-img {
+                width: 70px;
+                height: 70px;
             }
         }
     </style>
@@ -416,8 +385,7 @@
 
     <nav class="navbar">
         <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
-        <a href="home.html" class="logo">
-            <i class="fas fa-shopping-basket"></i>
+        <a href="home.html" class="logo"> <i class="fas fa-shopping-basket"></i>
             <div>RE<span>SELL</span></div>
         </a>
         <button class="theme-btn" id="themeToggle" title="Change Theme"></button>
@@ -496,21 +464,28 @@
         </div>
     </div>
 
+    <div id="toast"></div>
+
     <script>
-        // 1. Theme Logic (FIXED: Added full logic)
+        // ==========================================
+        // TOAST NOTIFICATION LOGIC
+        // ==========================================
+        function showToast(message, isError = false) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.style.backgroundColor = isError ? "#ef4444" : "var(--primary-green)";
+            toast.classList.add("show");
+            setTimeout(() => { toast.classList.remove("show"); }, 3000);
+        }
+
+        // Theme Logic
         const themeToggleBtn = document.getElementById('themeToggle');
         const htmlElement = document.documentElement;
 
         function applyTheme(themeName) {
-            if (themeName === 'inverse') {
-                htmlElement.setAttribute('data-theme', 'inverse');
-                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                htmlElement.removeAttribute('data-theme');
-                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
-            }
+            if (themeName === 'inverse') { htmlElement.setAttribute('data-theme', 'inverse'); themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>'; }
+            else { htmlElement.removeAttribute('data-theme'); themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>'; }
         }
-
         let currentTheme = localStorage.getItem('siteTheme') || 'default';
         applyTheme(currentTheme);
 
@@ -520,14 +495,14 @@
             applyTheme(currentTheme);
         });
 
-        // 2. Auth Check
+        // Auth Check
         const userName = localStorage.getItem('userName');
         if (localStorage.getItem('isLoggedIn') !== 'true' || !userName) {
-            alert("Please login first to post an ad!");
+            // Toast will not be able to redirect properly here before user sees it on first load, so standard alert is okay or immediate redirect
             window.location.href = 'login.html';
         }
 
-        // 3. Image Compression & Preview
+        // Image Compression
         const fileInput = document.getElementById('fileInput');
         const previewContainer = document.getElementById('previewContainer');
         const dropZone = document.getElementById('dropZone');
@@ -559,21 +534,15 @@
 
         fileInput.addEventListener('change', function (e) {
             const files = Array.from(e.target.files);
-
-            // Jdo vi file select hove taan error border hata do
             dropZone.classList.remove('error-border');
 
             files.forEach(file => {
                 if (selectedFiles.length >= 5) return;
-
                 compressImage(file, function (compressedBase64) {
                     selectedFiles.push(compressedBase64);
-
                     const imgWrapper = document.createElement('div');
                     imgWrapper.className = 'img-wrapper';
-                    imgWrapper.innerHTML = `<img src="${compressedBase64}" class="preview-img">
-                                            <button type="button" class="remove-img"><i class="fas fa-times"></i></button>`;
-
+                    imgWrapper.innerHTML = `<img src="${compressedBase64}" class="preview-img"><button type="button" class="remove-img"><i class="fas fa-times"></i></button>`;
                     imgWrapper.querySelector('.remove-img').onclick = function () {
                         selectedFiles = selectedFiles.filter(src => src !== compressedBase64);
                         imgWrapper.remove();
@@ -584,14 +553,26 @@
             fileInput.value = '';
         });
 
-        // 4. Save Product to MongoDB Logic
+        // Form Submit
         document.getElementById('sellForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            // CHECK: Koi image select nahi kiti taan error deo
             if (selectedFiles.length === 0) {
                 dropZone.classList.add('error-border');
-                alert("Please upload at least 1 image!");
+                showToast("Please upload at least 1 image!", true);
+                return;
+            }
+
+            const title = document.getElementById('sellTitle').value.trim();
+            const price = Number(document.getElementById('sellPrice').value);
+            const category = document.getElementById('sellCategory').value;
+            const loc = document.getElementById('sellLocation').value.trim();
+            const phone = document.getElementById('sellPhone').value.trim();
+            const altPhone = document.getElementById('sellAltPhone').value.trim();
+            const desc = document.getElementById('sellDesc').value.trim();
+
+            if (!title || !price || !category || !loc || !phone || !desc) {
+                showToast("Please fill all required fields correctly!", true);
                 return;
             }
 
@@ -602,18 +583,12 @@
             const dateStr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][dateObj.getMonth()] + " " + dateObj.getDate();
 
             const newProduct = {
-                title: document.getElementById('sellTitle').value,
-                price: Number(document.getElementById('sellPrice').value),
-                category: document.getElementById('sellCategory').value,
-                loc: document.getElementById('sellLocation').value,
-                phone: document.getElementById('sellPhone').value,
-                altPhone: document.getElementById('sellAltPhone').value, // This is now Whatsapp number
-                desc: document.getElementById('sellDesc').value,
+                title, price, category, loc, phone, altPhone, desc,
                 date: dateStr,
                 sellerName: userName,
-                sellerEmail: localStorage.getItem('userEmail'), // Original email send kiti
-                img: selectedFiles[0], // Pehli photo main display hougi
-                images: selectedFiles // Saariyan photos da array
+                sellerEmail: localStorage.getItem('userEmail') || "no-email",
+                img: selectedFiles[0],
+                images: selectedFiles
             };
 
             try {
@@ -626,15 +601,20 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert("Product Successfully Added to MongoDB!");
-                    window.location.href = "home.html";
+                    showToast("Product successfully added! Redirecting...");
+                    // Thoda delay taaki user toast message padh sake
+                    setTimeout(() => {
+                        window.location.href = "home.html";
+                    }, 1500);
                 } else {
-                    alert("Error: " + data.message);
-                    submitBtn.innerText = "POST NOW"; submitBtn.disabled = false;
+                    showToast("Backend Error: " + data.message, true);
+                    submitBtn.innerHTML = 'POST NOW <i class="fas fa-arrow-right"></i>';
+                    submitBtn.disabled = false;
                 }
             } catch (err) {
-                alert("Server Error! Ensure backend is running.");
-                submitBtn.innerText = "POST NOW"; submitBtn.disabled = false;
+                showToast("Network/Server Error! Make sure server.js is running.", true);
+                submitBtn.innerHTML = 'POST NOW <i class="fas fa-arrow-right"></i>';
+                submitBtn.disabled = false;
             }
         });
     </script>
