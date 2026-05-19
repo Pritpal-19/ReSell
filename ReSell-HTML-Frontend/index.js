@@ -13,7 +13,7 @@ app.use(express.json({ limit: '500mb' }));
 app.use(express.urlencoded({ extended: true, limit: '500mb' }));
 app.use(cors());
 
-const frontendPath = path.join(__dirname, '/'); 
+const frontendPath = __dirname; 
 app.use(express.static(frontendPath));
 
 // ==========================================
