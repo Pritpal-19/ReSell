@@ -360,6 +360,22 @@
                 right: 12px;
             }
         }
+
+        /* OTP Glowing Effects */
+        .glow-success {
+            border-color: var(--primary-green) !important;
+            box-shadow: 0 0 10px var(--primary-green) !important;
+        }
+
+        .glow-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 10px #ef4444 !important;
+        }
+
+        #otpSection {
+            display: none;
+            margin-top: 15px;
+        }
     </style>
 </head>
 
@@ -418,7 +434,20 @@
                         <button type="button" class="eye-btn" onclick="togglePassword('signupPass', this)"><i
                                 class="fas fa-eye"></i></button>
                     </div>
-                    <button type="submit" class="submit-btn" id="createAccountBtn">Create Account <i
+
+                    <button type="button" id="sendOtpBtn" class="submit-btn" style="background: #3b82f6;"
+                        onclick="sendOtp()">Send OTP</button>
+
+                    <div id="otpSection">
+                        <div class="input-group">
+                            <i class="fas fa-key"></i>
+                            <input type="text" id="signupOtp" placeholder="Enter OTP" maxlength="6">
+                        </div>
+                        <button type="button" class="submit-btn" style="background: #f59e0b;"
+                            onclick="verifyOtp()">Verify OTP</button>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="createAccountBtn" disabled>Create Account <i
                             class="fas fa-arrow-right"></i></button>
                 </form>
             </div>
@@ -551,6 +580,49 @@
                 btn.disabled = false;
             }
         });
+
+        async function sendOtp() {
+            const email = document.getElementById('signupEmail').value;
+            if (!email) return showToast("Please enter email first", true);
+
+            document.getElementById('sendOtpBtn').innerText = "Sending...";
+
+            const res = await fetch('http://localhost:3000/api/send-otp', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast("OTP sent to your email!");
+                document.getElementById('otpSection').style.display = 'block';
+                document.getElementById('sendOtpBtn').style.display = 'none';
+            } else {
+                showToast(data.message, true);
+                document.getElementById('sendOtpBtn').innerText = "Send OTP";
+            }
+        }
+
+        async function verifyOtp() {
+            const email = document.getElementById('signupEmail').value;
+            const otp = document.getElementById('signupOtp').value;
+            const otpInput = document.getElementById('signupOtp');
+
+            const res = await fetch('http://localhost:3000/api/verify-otp', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, otp })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast("OTP Verified!");
+                otpInput.classList.add('glow-success');
+                document.getElementById('createAccountBtn').disabled = false;
+            } else {
+                showToast("Invalid OTP!", true);
+                otpInput.classList.add('glow-error');
+                otpInput.value = ""; // Clear box
+                setTimeout(() => otpInput.classList.remove('glow-error'), 1000);
+            }
+        }
     </script>
 </body>
 
