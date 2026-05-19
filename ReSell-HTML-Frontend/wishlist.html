@@ -436,7 +436,7 @@
         async function loadWishlist() {
             const grid = document.getElementById('wishlistGrid');
             try {
-                const response = await fetch('http://localhost:3000/api/get-wishlist', {
+                const response = await fetch('/api/get-wishlist', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: userEmail })
@@ -499,7 +499,7 @@
 
             // Replaced confirm with direct action + toast for better UX
             try {
-                const response = await fetch('http://localhost:3000/api/toggle-wishlist', {
+                const response = await fetch('/api/toggle-wishlist', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: userEmail, productId: productId })

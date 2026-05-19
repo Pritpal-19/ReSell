@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 🔥 Limit 500MB kitti hai taaki kinniyan vi waddiyan photos hon, crash na hove!
-app.use(express.json({ limit: '500mb' })); 
+app.use(express.json({ limit: '500mb' }));
 app.use(express.urlencoded({ extended: true, limit: '500mb' }));
 app.use(cors());
 
@@ -141,7 +141,7 @@ app.post('/api/forgot-password-otp', async (req, res) => {
 
     try {
         const user = await User.findOne({ email });
-        if (!user) return res.status(404).json({ success: false, message: "Eh Email database vich nahi mili. Kripya sahi email bharo." });
+        if (!user) return res.status(404).json({ success: false, message: "Email not found in database." });
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         otpStore[email] = otp;
@@ -150,22 +150,13 @@ app.post('/api/forgot-password-otp', async (req, res) => {
             from: process.env.EMAIL_USER,
             to: email,
             subject: 'ReSell - Reset Your Password',
-            html: `
-                <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">
-                    <h2 style="color: #4ca154;">Password Reset Request</h2>
-                    <p>Here is your OTP to reset your ReSell password:</p>
-                    <h1 style="background: #f8fafc; padding: 10px; display: inline-block; border-radius: 8px;">${otp}</h1>
-                    <p>If you didn't request this, please ignore this email.</p>
-                </div>
-            `
+            html: `<div style="text-align: center;"><h2>Password Reset</h2><h1>${otp}</h1></div>`
         };
 
         await transporter.sendMail(mailOptions);
-        console.log(`📩 Password Reset OTP sent to ${email}`);
         res.json({ success: true, message: "OTP sent to your email!" });
 
     } catch (error) {
-        console.error("Forgot Pass OTP Error:", error);
         res.status(500).json({ success: false, message: "Failed to send OTP." });
     }
 });
@@ -173,18 +164,13 @@ app.post('/api/forgot-password-otp', async (req, res) => {
 // 🟢 Reset Password
 app.post('/api/reset-password', async (req, res) => {
     const { email, newPassword, otp } = req.body;
-
-    if (otpStore[email] !== otp) {
-        return res.status(400).json({ success: false, message: "Invalid or expired OTP!" });
-    }
+    if (otpStore[email] !== otp) return res.status(400).json({ success: false, message: "Invalid OTP!" });
 
     try {
         await User.findOneAndUpdate({ email }, { password: newPassword });
         delete otpStore[email];
-        console.log(`✅ Password reset successful for: ${email}`);
-        res.json({ success: true, message: "Password updated successfully! You can now login." });
+        res.json({ success: true, message: "Password updated successfully!" });
     } catch (error) {
-        console.error("Reset Password Error:", error);
         res.status(500).json({ success: false, message: "Failed to update password." });
     }
 });
@@ -202,71 +188,40 @@ app.post('/api/send-otp', async (req, res) => {
             from: process.env.EMAIL_USER,
             to: email,
             subject: 'ReSell - Registration OTP',
-            html: `
-                <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">
-                    <h2 style="color: #4ca154;">Welcome to ReSell!</h2>
-                    <p>Your One Time Password (OTP) for registration is:</p>
-                    <h1 style="background: #f8fafc; padding: 10px; display: inline-block; border-radius: 8px;">${otp}</h1>
-                    <p>This OTP is valid for the next 5 minutes.</p>
-                </div>
-            `
+            html: `<div style="text-align: center;"><h2>Registration OTP</h2><h1>${otp}</h1></div>`
         };
 
         await transporter.sendMail(mailOptions);
-        console.log(`📩 OTP sent to ${email}`);
         res.json({ success: true, message: "OTP sent successfully!" });
 
     } catch (error) {
-        console.error("OTP Error:", error);
         res.status(500).json({ success: false, message: "Failed to send OTP." });
-    }
-});
-
-// 🟢 Verify Email OTP
-app.post('/api/verify-otp', (req, res) => {
-    const { email, otp } = req.body;
-    if (otpStore[email] && otpStore[email] === otp) {
-        res.json({ success: true, message: "OTP Verified!" });
-    } else {
-        res.status(400).json({ success: false, message: "Invalid OTP" });
     }
 });
 
 // 🟢 Register User
 app.post('/api/register', async (req, res) => {
     const { name, email, password, otp } = req.body;
-
-    // Direct bypass for quick testing, remove this in production if you strictly want OTP
-    // if (otpStore[email] !== otp && otp !== "123456") {
-    //    return res.status(400).json({ success: false, message: "Invalid or expired OTP!" });
-    // }
-
     try {
         const newUser = new User({ name, email, password });
         await newUser.save();
         delete otpStore[email];
-        console.log(`✅ New user registered: ${name}`);
         res.json({ success: true, message: "Account created successfully!" });
     } catch (error) {
-        console.error("Registration Error:", error);
         res.status(500).json({ success: false, message: "Registration failed." });
     }
 });
 
-// 🟢 Login Route (EH WALA ROUTE MISS C PICHHLI FILE VICH)
+// 🟢 Login Route
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ success: false, message: "Account does not exist." });
+        if (user.password !== password) return res.status(401).json({ success: false, message: "Invalid password!" });
 
-        if (!user) return res.status(404).json({ success: false, message: "Account does not exist. Please sign up first." });
-        if (user.password !== password) return res.status(401).json({ success: false, message: "Invalid password! Please try again." });
-
-        console.log(`🔑 User logged in: ${user.name}`);
         res.json({ success: true, message: "Login successful!", userName: user.name });
-
     } catch (error) {
-        console.error("Login Error:", error);
         res.status(500).json({ success: false, message: "Login failed." });
     }
 });
@@ -274,25 +229,20 @@ app.post('/api/login', async (req, res) => {
 // 🟢 ROUTE: Add New Product 
 app.post('/api/add-product', async (req, res) => {
     try {
-        console.log("Receiving new product data...");
         const newProduct = new Product(req.body);
         await newProduct.save();
-        console.log(`✅ New product added: ${newProduct.title}`);
         res.json({ success: true, message: "Product saved to MongoDB!" });
     } catch (error) {
-        console.error("❌ Error saving product:", error.message);
         res.status(500).json({ success: false, message: `Backend Error: ${error.message}` });
     }
 });
 
-// 🟢 ROUTE: Get All Products from MongoDB
+// 🟢 ROUTE: Get All Products
 app.get('/api/get-products', async (req, res) => {
     try {
-        console.log("Fetching products from database...");
-        const products = await Product.find().sort({ _id: -1 }).lean(); 
+        const products = await Product.find().sort({ _id: -1 }).lean();
         res.json({ success: true, products });
     } catch (error) {
-        console.error("❌ GET Products Error Detail:", error.message);
         res.status(500).json({ success: false, message: `Failed to fetch: ${error.message}` });
     }
 });
@@ -302,13 +252,15 @@ app.post('/api/delete-product', async (req, res) => {
     const { id } = req.body;
     try {
         await Product.findByIdAndDelete(id);
-        console.log(`🗑️ Product deleted: ${id}`);
         res.json({ success: true, message: "Product deleted successfully!" });
     } catch (error) {
         res.status(500).json({ success: false, message: "Failed to delete product" });
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server is flying on http://localhost:${PORT}`);
-});
+// Vercel ke liye server export karna zaroori hai
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => console.log(`🚀 Local Server running on port ${PORT}`));
+}
+
+module.exports = app;

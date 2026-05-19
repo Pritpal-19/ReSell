@@ -742,7 +742,7 @@
             const icon = document.getElementById('wishlistIcon');
 
             try {
-                const response = await fetch('http://localhost:3000/api/toggle-wishlist', {
+                const response = await fetch('/api/toggle-wishlist', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: userEmail, productId: currentProdId })
@@ -773,7 +773,7 @@
             if (!userEmail) return;
 
             try {
-                const response = await fetch('http://localhost:3000/api/check-wishlist', {
+                const response = await fetch('/api/check-wishlist', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: userEmail, productId: currentProdId })
@@ -877,7 +877,7 @@
             // Native browser confirm is safer for deletions to avoid accidental clicks
             if (confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
                 try {
-                    const response = await fetch('http://localhost:3000/api/delete-product', {
+                    const response = await fetch('/api/delete-product', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ id: currentProdId })

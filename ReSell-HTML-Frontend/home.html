@@ -1006,7 +1006,7 @@
             grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">Loading products from database...</p>';
 
             try {
-                const response = await fetch('http://localhost:3000/api/get-products');
+                const response = await fetch('/api/get-products');
                 const data = await response.json();
 
                 if (data.success) {
