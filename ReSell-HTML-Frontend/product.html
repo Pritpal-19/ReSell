@@ -564,8 +564,8 @@
 <body>
 
     <nav class="navbar">
-        <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
-        <a href="home.html" class="logo"><i class="fas fa-shopping-basket"></i>
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+        <a href="index.html" class="logo"><i class="fas fa-shopping-basket"></i>
             <div>RE<span>SELL</span></div>
         </a>
     </nav>
@@ -795,7 +795,7 @@
         // ==============================
         document.addEventListener('DOMContentLoaded', () => {
             const productData = localStorage.getItem('currentProduct');
-            if (!productData) return window.location.href = 'home.html';
+            if (!productData) return window.location.href = 'index.html';
 
             const p = JSON.parse(productData);
             currentProdId = p._id;
@@ -888,7 +888,7 @@
                         showToast("Product deleted successfully!");
                         // Thoda wait karke redirect karo taaki toast dikh sake
                         setTimeout(() => {
-                            window.location.href = 'home.html';
+                            window.location.href = 'index.html';
                         }, 1500);
                     } else {
                         showToast("Failed to delete product.", true);

@@ -385,8 +385,8 @@
 <body>
 
     <nav class="navbar">
-        <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
-        <a href="home.html" class="logo"> <i class="fas fa-shopping-basket"></i>
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+        <a href="index.html" class="logo"> <i class="fas fa-shopping-basket"></i>
             <div>RE<span>SELL</span></div>
         </a>
         <button class="theme-btn" id="themeToggle" title="Change Theme"></button>
@@ -605,7 +605,7 @@
                     showToast("Product successfully added! Redirecting...");
                     // Thoda delay taaki user toast message padh sake
                     setTimeout(() => {
-                        window.location.href = "home.html";
+                        window.location.href = "index.html";
                     }, 1500);
                 } else {
                     showToast("Backend Error: " + data.message, true);

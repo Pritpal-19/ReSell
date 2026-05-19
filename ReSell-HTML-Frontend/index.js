@@ -69,7 +69,7 @@ const otpStore = {};
 // ==========================================
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'home.html'));
+    res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // 🟢 Check User Email
