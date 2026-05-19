@@ -6,7 +6,7 @@
             "use": "@vercel/node"
         },
         {
-            "src": "ReSell-HTML-Frontend/**/*",
+            "src": "**",
             "use": "@vercel/static"
         }
     ],
@@ -17,7 +17,7 @@
         },
         {
             "src": "/(.*)",
-            "dest": "/ReSell-HTML-Frontend/$1"
+            "dest": "/$1"
         }
     ]
 }
