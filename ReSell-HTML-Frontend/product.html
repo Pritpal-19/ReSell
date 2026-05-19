@@ -564,8 +564,8 @@
 <body>
 
     <nav class="navbar">
-        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
-        <a href="index.html" class="logo"><i class="fas fa-shopping-basket"></i>
+        <a href="index" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+        <a href="index" class="logo"><i class="fas fa-shopping-basket"></i>
             <div>RE<span>SELL</span></div>
         </a>
     </nav>
@@ -795,7 +795,7 @@
         // ==============================
         document.addEventListener('DOMContentLoaded', () => {
             const productData = localStorage.getItem('currentProduct');
-            if (!productData) return window.location.href = 'index.html';
+            if (!productData) return window.location.href = 'index';
 
             const p = JSON.parse(productData);
             currentProdId = p._id;
@@ -866,7 +866,7 @@
                 checkWishlistStatus();
             } else {
                 chatBtn.innerText = "Login to Contact";
-                chatBtn.onclick = () => window.location.href = 'login.html';
+                chatBtn.onclick = () => window.location.href = 'login';
             }
         });
 
@@ -888,7 +888,7 @@
                         showToast("Product deleted successfully!");
                         // Thoda wait karke redirect karo taaki toast dikh sake
                         setTimeout(() => {
-                            window.location.href = 'index.html';
+                            window.location.href = 'index';
                         }, 1500);
                     } else {
                         showToast("Failed to delete product.", true);

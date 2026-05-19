@@ -854,13 +854,13 @@
         </div>
 
         <div class="nav-actions" id="navActions">
-            <a href="login.html" class="login-btn" id="loginBtnNav">Login</a>
+            <a href="login" class="login-btn" id="loginBtnNav">Login</a>
 
             <div class="user-profile" id="userProfileNav" style="display: none;">
                 <div class="avatar-circle" id="userAvatar" onclick="toggleProfileDropdown()">P</div>
                 <div class="profile-dropdown" id="profileDropdown">
 
-                    <a href="wishlist.html" class="wishlist-btn">
+                    <a href="wishlist" class="wishlist-btn">
                         <i class="fas fa-heart"></i> My Wishlist
                     </a>
 
@@ -872,7 +872,7 @@
                 </div>
             </div>
 
-            <a href="sell.html" class="sell-btn"><span>+</span> SELL</a>
+            <a href="sell" class="sell-btn"><span>+</span> SELL</a>
             <button class="theme-btn" id="themeToggle" title="Change Theme"></button>
         </div>
 
@@ -914,9 +914,9 @@
                 <div class="footer-col">
                     <h4>About Us</h4>
                     <ul>
-                        <li><a href="about.html#about-group" style="color: inherit; text-decoration: none;">About
+                        <li><a href="about#about-group" style="color: inherit; text-decoration: none;">About
                                 Re-sell Group</a></li>
-                        <li><a href="about.html#contact-us" style="color: inherit; text-decoration: none;">Contact
+                        <li><a href="about#contact-us" style="color: inherit; text-decoration: none;">Contact
                                 Us</a></li>
                     </ul>
                 </div>
@@ -924,10 +924,10 @@
                 <div class="footer-col">
                     <h4>Re-sell</h4>
                     <ul>
-                        <li><a href="resell.html#help" style="color: inherit; text-decoration: none;">Help</a></li>
-                        <li><a href="resell.html#sitemap" style="color: inherit; text-decoration: none;">Sitemap</a>
+                        <li><a href="resell#help" style="color: inherit; text-decoration: none;">Help</a></li>
+                        <li><a href="resell#sitemap" style="color: inherit; text-decoration: none;">Sitemap</a>
                         </li>
-                        <li><a href="resell.html#legal" style="color: inherit; text-decoration: none;">Legal & Privacy
+                        <li><a href="resell#legal" style="color: inherit; text-decoration: none;">Legal & Privacy
                                 information</a></li>
                     </ul>
                 </div>
@@ -948,8 +948,8 @@
             <div class="footer-bottom-container">
                 <div class="footer-logo">RE<span>SELL</span> GROUP</div>
                 <div class="footer-links">
-                    <a href="resell.html#help" style="color: inherit; text-decoration: none;">Help</a> -
-                    <a href="resell.html#sitemap" style="color: inherit; text-decoration: none;">Sitemap</a>
+                    <a href="resell#help" style="color: inherit; text-decoration: none;">Help</a> -
+                    <a href="resell#sitemap" style="color: inherit; text-decoration: none;">Sitemap</a>
                 </div>
                 <div class="footer-copy">All rights reserved © 2026 Re-sell</div>
             </div>
@@ -1156,7 +1156,7 @@
         function viewProduct(index) {
             const selectedProduct = fetchedProducts[index];
             localStorage.setItem('currentProduct', JSON.stringify(selectedProduct));
-            window.location.href = 'product.html';
+            window.location.href = 'product';
         }
 
         // ==============================

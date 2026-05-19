@@ -385,8 +385,8 @@
 <body>
 
     <nav class="navbar">
-        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
-        <a href="index.html" class="logo"> <i class="fas fa-shopping-basket"></i>
+        <a href="index" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+        <a href="index" class="logo"> <i class="fas fa-shopping-basket"></i>
             <div>RE<span>SELL</span></div>
         </a>
         <button class="theme-btn" id="themeToggle" title="Change Theme"></button>
@@ -500,7 +500,7 @@
         const userName = localStorage.getItem('userName');
         if (localStorage.getItem('isLoggedIn') !== 'true' || !userName) {
             // Toast will not be able to redirect properly here before user sees it on first load, so standard alert is okay or immediate redirect
-            window.location.href = 'login.html';
+            window.location.href = 'login';
         }
 
         // Image Compression
@@ -605,7 +605,7 @@
                     showToast("Product successfully added! Redirecting...");
                     // Thoda delay taaki user toast message padh sake
                     setTimeout(() => {
-                        window.location.href = "index.html";
+                        window.location.href = "index";
                     }, 1500);
                 } else {
                     showToast("Backend Error: " + data.message, true);
