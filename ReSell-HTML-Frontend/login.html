@@ -636,7 +636,7 @@
 
             document.getElementById('sendOtpBtn').innerText = "Sending...";
 
-            const res = await fetch('http://localhost:3000/api/send-otp', {
+            const res = await fetch('/api/send-otp', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email })
             });
             const data = await res.json();
