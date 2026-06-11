@@ -197,7 +197,12 @@ app.post('/api/send-otp', async (req, res) => {
     } catch (error) {
         // ETHE CHANGE KITA HAI 👇 (Eh asli error bahaar kadd ke lyauga)
         console.error("🚨 NODEMAILER ERROR DETAILS: 🚨", error);
-        res.status(500).json({ success: false, message: "Failed to send OTP." });
+        // res.status(500).json({ success: false, message: "Failed to send OTP." });
+        res.status(500).json({
+            success: false,
+            message: "Failed to send OTP.",
+            actual_error: error.message || error.toString()
+        });
     }
 });
 
