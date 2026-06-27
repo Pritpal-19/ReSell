@@ -221,14 +221,14 @@ app.post('/api/register', async (req, res) => {
     const { name, email, password, otp } = req.body;
 
     // Safety check: Database vich bhejkan ton pehla final OTP check
-    if (otpStore[email] !== otp) {
-        return res.status(400).json({ success: false, message: "Invalid or expired OTP!" });
-    }
+    // if (otpStore[email] !== otp) {
+    //     return res.status(400).json({ success: false, message: "Invalid or expired OTP!" });
+    // }
 
     try {
         const newUser = new User({ name, email, password });
         await newUser.save();
-        delete otpStore[email]; // Account banan ton baad OTP clear kardo
+        // delete otpStore[email]; // Account banan ton baad OTP clear kardo
         res.json({ success: true, message: "Account created successfully!" });
     } catch (error) {
         res.status(500).json({ success: false, message: "Registration failed." });

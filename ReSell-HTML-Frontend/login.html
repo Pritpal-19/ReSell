@@ -412,7 +412,8 @@
                         <button type="button" class="eye-btn" onclick="togglePassword('loginPass', this)"><i
                                 class="fas fa-eye"></i></button>
                     </div>
-                    <a href="#forgotSection" class="forgot-link" onclick="switchForm('forgot'); return false;">Forgot Password?</a>
+                    <a href="#forgotSection" class="forgot-link" onclick="switchForm('forgot'); return false;">Forgot
+                        Password?</a>
                     <button type="submit" class="submit-btn" id="loginBtn">Login <i
                             class="fas fa-arrow-right"></i></button>
                 </form>
@@ -662,9 +663,13 @@
             const data = await res.json();
 
             if (data.success) {
-                showToast("OTP Verified!");
-                otpInput.classList.add('glow-success');
-                document.getElementById('createAccountBtn').disabled = false;
+                const verifyBtn = document.getElementById('signupOtp'); // Id dhyan naal paayi
+                verifyBtn.innerText = 'Verified!';
+                verifyBtn.style.backgroundColor = '#28a745'; // Green color
+                verifyBtn.style.color = 'white';
+                verifyBtn.disabled = true; // Taaki user dobara click na kare
+
+                alert("OTP Verified Successfully!");
             } else {
                 showToast("Invalid OTP!", true);
                 otpInput.classList.add('glow-error');
