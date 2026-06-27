@@ -168,7 +168,7 @@ app.post('/api/reset-password', async (req, res) => {
 
     try {
         await User.findOneAndUpdate({ email }, { password: newPassword });
-        delete otpStore[email];
+        delete otpStore[email]; // OTP verify hon ton baad memory vicho uda dao
         res.json({ success: true, message: "Password updated successfully!" });
     } catch (error) {
         res.status(500).json({ success: false, message: "Failed to update password." });
@@ -195,9 +195,7 @@ app.post('/api/send-otp', async (req, res) => {
         res.json({ success: true, message: "OTP sent successfully!" });
 
     } catch (error) {
-        // ETHE CHANGE KITA HAI 👇 (Eh asli error bahaar kadd ke lyauga)
         console.error("🚨 NODEMAILER ERROR DETAILS: 🚨", error);
-        // res.status(500).json({ success: false, message: "Failed to send OTP." });
         res.status(500).json({
             success: false,
             message: "Failed to send OTP.",
@@ -206,13 +204,31 @@ app.post('/api/send-otp', async (req, res) => {
     }
 });
 
+// 🟢 Verify OTP for Registration (NAWA ROUTE)
+app.post('/api/verify-otp', (req, res) => {
+    const { email, otp } = req.body;
+
+    // Check karda aa ki memory vich oh OTP hai te match hunda aa ya nahi
+    if (otpStore[email] && otpStore[email] === otp) {
+        res.json({ success: true, message: "OTP verified successfully!" });
+    } else {
+        res.status(400).json({ success: false, message: "Invalid OTP!" });
+    }
+});
+
 // 🟢 Register User
 app.post('/api/register', async (req, res) => {
     const { name, email, password, otp } = req.body;
+
+    // Safety check: Database vich bhejkan ton pehla final OTP check
+    if (otpStore[email] !== otp) {
+        return res.status(400).json({ success: false, message: "Invalid or expired OTP!" });
+    }
+
     try {
         const newUser = new User({ name, email, password });
         await newUser.save();
-        delete otpStore[email];
+        delete otpStore[email]; // Account banan ton baad OTP clear kardo
         res.json({ success: true, message: "Account created successfully!" });
     } catch (error) {
         res.status(500).json({ success: false, message: "Registration failed." });
