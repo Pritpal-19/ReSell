@@ -7,7 +7,6 @@
     <title>ReSell - Login & Sign Up</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="favicon.svg">
-
     <style>
         :root {
             --nav-bg: #ffffff;
@@ -380,26 +379,21 @@
 </head>
 
 <body>
-
     <header class="auth-header">
         <a href="index" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
         <a href="index" class="logo"><i class="fas fa-shopping-basket"></i>
             <div>RE<span>SELL</span></div>
         </a>
     </header>
-
     <div class="auth-wrapper">
         <div class="auth-card">
-
             <h2 class="auth-title" id="formTitle">Welcome Back</h2>
             <p class="auth-subtitle" id="formSubtitle">Login to manage your store</p>
-
             <div class="main-toggle" id="mainToggleGroup">
                 <div class="toggle-slider" id="toggleSlider"></div>
                 <div class="toggle-btn active" id="toggleLogin" onclick="switchForm('login')">Login</div>
                 <div class="toggle-btn" id="toggleSignup" onclick="switchForm('signup')">Sign Up</div>
             </div>
-
             <div id="loginSection" class="auth-form active">
                 <form id="loginForm">
                     <div class="input-group">
@@ -418,7 +412,6 @@
                             class="fas fa-arrow-right"></i></button>
                 </form>
             </div>
-
             <div id="signupSection" class="auth-form">
                 <form id="signupForm">
                     <div class="input-group">
@@ -435,24 +428,20 @@
                         <button type="button" class="eye-btn" onclick="togglePassword('signupPass', this)"><i
                                 class="fas fa-eye"></i></button>
                     </div>
-
                     <button type="button" id="sendOtpBtn" class="submit-btn" style="background: #3b82f6;"
                         onclick="sendOtp()">Send OTP</button>
-
                     <div id="otpSection">
                         <div class="input-group">
                             <i class="fas fa-key"></i>
                             <input type="text" id="signupOtp" placeholder="Enter OTP" maxlength="6">
                         </div>
-                        <button type="button" class="submit-btn" style="background: #f59e0b;"
+                        <button type="button" id="verifyOtpBtn" class="submit-btn" style="background: #f59e0b;"
                             onclick="verifyOtp()">Verify OTP</button>
                     </div>
-
                     <button type="submit" class="submit-btn" id="createAccountBtn" disabled>Create Account <i
                             class="fas fa-arrow-right"></i></button>
                 </form>
             </div>
-
             <div id="forgotSection" class="auth-form">
                 <p class="auth-subtitle" style="margin-bottom: 20px;">Enter your email to receive a password reset OTP.
                 </p>
@@ -461,10 +450,8 @@
                         <i class="fas fa-envelope"></i>
                         <input type="email" id="forgotEmail" placeholder="Email Address" required>
                     </div>
-
                     <button type="button" id="forgotSendOtpBtn" class="submit-btn" style="background: #3b82f6;"
                         onclick="sendForgotOtp()">Send OTP</button>
-
                     <div id="forgotOtpArea" style="display: none; margin-top: 15px;">
                         <div class="input-group" style="margin-bottom: 15px;">
                             <i class="fas fa-key"></i>
@@ -479,11 +466,9 @@
                         <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 15px; text-align: left;">
                             Must be at least 8 characters, include a capital letter, a number, and a special character.
                         </p>
-
                         <button type="button" class="submit-btn" style="background: var(--primary-green);"
                             onclick="resetPassword()">Reset Password</button>
                     </div>
-
                     <div style="text-align: center; margin-top: 20px;">
                         <a href="#"
                             style="color: var(--text-muted); font-size: 14px; text-decoration: none; font-weight: bold;"
@@ -493,10 +478,8 @@
                     </div>
                 </form>
             </div>
-
         </div>
     </div>
-
     <div id="toast"></div>
 
     <script>
@@ -571,9 +554,7 @@
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('userName', data.userName);
                     localStorage.setItem('userEmail', email);
-
                     showToast(`Welcome back, ${data.userName}!`);
-
                     // Thoda ja delay deke redirect kitta taaki toast dikhe
                     setTimeout(() => {
                         window.location.href = 'index';
@@ -612,7 +593,6 @@
                 if (data.success) {
                     showToast(data.message);
                     document.getElementById('signupForm').reset();
-
                     // Thoda delay deke login form te bhejo
                     setTimeout(() => {
                         switchForm('login');
@@ -636,7 +616,6 @@
             if (!email) return showToast("Please enter email first", true);
 
             document.getElementById('sendOtpBtn').innerText = "Sending...";
-
             const res = await fetch('/api/send-otp', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email })
             });
@@ -663,13 +642,16 @@
             const data = await res.json();
 
             if (data.success) {
-                const verifyBtn = document.getElementById('signupOtp'); // Id dhyan naal paayi
+                const verifyBtn = document.getElementById('verifyOtpBtn');
                 verifyBtn.innerText = 'Verified!';
                 verifyBtn.style.backgroundColor = '#28a745'; // Green color
                 verifyBtn.style.color = 'white';
                 verifyBtn.disabled = true; // Taaki user dobara click na kare
 
-                alert("OTP Verified Successfully!");
+                // Account create karan aale button nu enable kardo
+                document.getElementById('createAccountBtn').disabled = false;
+
+                showToast("OTP Verified Successfully!");
             } else {
                 showToast("Invalid OTP!", true);
                 otpInput.classList.add('glow-error');
@@ -684,7 +666,6 @@
         async function sendForgotOtp() {
             const email = document.getElementById('forgotEmail').value;
             if (!email) return showToast("Please enter your email", true);
-
             const btn = document.getElementById('forgotSendOtpBtn');
             btn.innerText = "Sending...";
             btn.disabled = true;
@@ -717,7 +698,6 @@
             const email = document.getElementById('forgotEmail').value;
             const otp = document.getElementById('forgotOtp').value;
             const newPassword = document.getElementById('forgotNewPass').value;
-
             if (!otp || !newPassword) return showToast("Please fill all fields", true);
 
             // Password Check 
@@ -731,7 +711,6 @@
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, newPassword, otp })
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     showToast("Password Reset Successful!");
                     setTimeout(() => {
@@ -747,4 +726,4 @@
     </script>
 </body>
 
-</html>``
+</html>
