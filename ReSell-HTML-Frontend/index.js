@@ -22,17 +22,15 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('✅ MongoDB Atlas Connected Successfully!'))
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-// 1. User Schema (FIXED)
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     wishlist: { type: Array, default: [] },
     createdAt: { type: Date, default: Date.now }
-}); // <-- Closing bracket fixed
+});
 const User = mongoose.model('User', userSchema);
 
-// 2. Product Schema (FIXED)
 const productSchema = new mongoose.Schema({
     title: { type: String, required: true },
     price: { type: Number, required: true },
@@ -47,11 +45,11 @@ const productSchema = new mongoose.Schema({
     img: { type: String },
     images: [{ type: String }],
     createdAt: { type: Date, default: Date.now }
-}); // <-- Closing bracket fixed
+});
 const Product = mongoose.model('Product', productSchema);
 
 // ==========================================
-// NODEMAILER SETUP (FIXED)
+// NODEMAILER SETUP (Strict Email Mode)
 // ==========================================
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -59,7 +57,7 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     }
-}); // <-- Closing bracket fixed
+});
 
 const otpStore = {};
 
@@ -132,7 +130,7 @@ app.post('/api/check-wishlist', async (req, res) => {
     }
 });
 
-// Forgot Password - Send OTP
+// Forgot Password - Send OTP via Email
 app.post('/api/forgot-password-otp', async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ success: false, message: "Email is required!" });
@@ -144,16 +142,21 @@ app.post('/api/forgot-password-otp', async (req, res) => {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         otpStore[email] = otp;
 
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'ReSell - Reset Your Password',
-            html: `<div style="text-align: center;"><h2>Password Reset</h2><h1>${otp}</h1></div>`
-        };
-        await transporter.sendMail(mailOptions);
-        res.json({ success: true, message: "OTP sent to your email!" });
+        try {
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: email,
+                subject: 'ReSell - Reset Your Password',
+                html: `<div style="text-align: center;"><h2>Password Reset</h2><h1>${otp}</h1></div>`
+            };
+            await transporter.sendMail(mailOptions);
+            res.json({ success: true, message: "OTP sent to your email!" });
+        } catch (mailError) {
+            console.error('❌ Nodemailer Error:', mailError);
+            res.status(500).json({ success: false, message: "Failed to send email. Check .env configuration." });
+        }
     } catch (error) {
-        res.status(500).json({ success: false, message: "Failed to send OTP." });
+        res.status(500).json({ success: false, message: "Database Error." });
     }
 });
 
@@ -171,7 +174,7 @@ app.post('/api/reset-password', async (req, res) => {
     }
 });
 
-// Send OTP for Registration
+// Send OTP for Registration via Email
 app.post('/api/send-otp', async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ success: false, message: "Email is required!" });
@@ -186,20 +189,21 @@ app.post('/api/send-otp', async (req, res) => {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         otpStore[email] = otp;
 
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'ReSell - Registration OTP',
-            html: `<div style="text-align: center;"><h2>Registration OTP</h2><h1>${otp}</h1></div>`
-        };
-        await transporter.sendMail(mailOptions);
-        res.json({ success: true, message: "OTP sent successfully!" });
+        try {
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: email,
+                subject: 'ReSell - Registration OTP',
+                html: `<div style="text-align: center;"><h2>Registration OTP</h2><h1>${otp}</h1></div>`
+            };
+            await transporter.sendMail(mailOptions);
+            res.json({ success: true, message: "OTP sent to your email!" });
+        } catch (mailError) {
+            console.error('❌ Nodemailer Error:', mailError);
+            res.status(500).json({ success: false, message: "Failed to send email. Check .env configuration." });
+        }
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed to send OTP.",
-            actual_error: error.message || error.toString()
-        });
+        res.status(500).json({ success: false, message: "Database Error." });
     }
 });
 
@@ -213,7 +217,7 @@ app.post('/api/verify-otp', (req, res) => {
     }
 });
 
-// Register User (FIXED OTP CHECK & DUPLICATE ERROR HANDLING)
+// Register User
 app.post('/api/register', async (req, res) => {
     const { name, email, password, otp } = req.body;
 
@@ -224,10 +228,9 @@ app.post('/api/register', async (req, res) => {
     try {
         const newUser = new User({ name, email, password });
         await newUser.save();
-        delete otpStore[email]; // Account banan ton baad OTP clear kardo
+        delete otpStore[email]; 
         res.json({ success: true, message: "Account created successfully!" });
     } catch (error) {
-        // Mongo Duplicate Key error handling
         if (error.code === 11000) {
             return res.status(400).json({ success: false, message: "Email is already registered!" });
         }
