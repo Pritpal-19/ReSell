@@ -203,7 +203,7 @@
             background: var(--input-bg);
             border: 1px solid var(--card-border);
             border-radius: 8px;
-            color: var(--nav-text);
+            color: #1e293b; /* TEXT COLOR FIX */
             font-size: 14px;
             font-weight: 500;
             outline: none;
@@ -555,7 +555,7 @@
                     localStorage.setItem('userName', data.userName);
                     localStorage.setItem('userEmail', email);
                     showToast(`Welcome back, ${data.userName}!`);
-                    // Thoda ja delay deke redirect kitta taaki toast dikhe
+                    
                     setTimeout(() => {
                         window.location.href = 'index';
                     }, 1500);
@@ -572,46 +572,46 @@
         });
 
         // ==========================================
-// SIGNUP LOGIC (UPDATED)
-// ==========================================
-document.getElementById('signupForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('signupName').value;
-    const email = document.getElementById('signupEmail').value;
-    const password = document.getElementById('signupPass').value;
-    const otp = document.getElementById('signupOtp').value; // <-- Hardcoded "123456" hatake actual OTP get kitta
-    const btn = document.getElementById('createAccountBtn');
+        // SIGNUP LOGIC (UPDATED)
+        // ==========================================
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPass').value;
+            const otp = document.getElementById('signupOtp').value;
+            const btn = document.getElementById('createAccountBtn');
 
-    btn.innerHTML = 'Creating... <i class="fas fa-spinner fa-spin"></i>';
-    btn.disabled = true;
+            btn.innerHTML = 'Creating... <i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
 
-    try {
-        const res = await fetch('/api/register', {
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ name, email, password, otp }) // <-- Real OTP bhejea
-        });
-        const data = await res.json();
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ name, email, password, otp })
+                });
+                const data = await res.json();
 
-        if (data.success) {
-            showToast(data.message);
-            document.getElementById('signupForm').reset();
-            setTimeout(() => {
-                switchForm('login');
+                if (data.success) {
+                    showToast(data.message);
+                    document.getElementById('signupForm').reset();
+                    setTimeout(() => {
+                        switchForm('login');
+                        btn.innerHTML = 'Create Account <i class="fas fa-arrow-right"></i>';
+                        btn.disabled = false;
+                    }, 1500);
+                } else {
+                    showToast(data.message, true);
+                    btn.innerHTML = 'Create Account <i class="fas fa-arrow-right"></i>';
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                showToast("Server connection error! Please ensure backend is running.", true);
                 btn.innerHTML = 'Create Account <i class="fas fa-arrow-right"></i>';
                 btn.disabled = false;
-            }, 1500);
-        } else {
-            showToast(data.message, true);
-            btn.innerHTML = 'Create Account <i class="fas fa-arrow-right"></i>';
-            btn.disabled = false;
-        }
-    } catch (err) {
-        showToast("Server connection error! Please ensure backend is running.", true);
-        btn.innerHTML = 'Create Account <i class="fas fa-arrow-right"></i>';
-        btn.disabled = false;
-    }
-});
+            }
+        });
 
         async function sendOtp() {
             const email = document.getElementById('signupEmail').value;
@@ -646,9 +646,9 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
             if (data.success) {
                 const verifyBtn = document.getElementById('verifyOtpBtn');
                 verifyBtn.innerText = 'Verified!';
-                verifyBtn.style.backgroundColor = '#28a745'; // Green color
+                verifyBtn.style.backgroundColor = '#28a745'; 
                 verifyBtn.style.color = 'white';
-                verifyBtn.disabled = true; // Taaki user dobara click na kare
+                verifyBtn.disabled = true; 
 
                 // Account create karan aale button nu enable kardo
                 document.getElementById('createAccountBtn').disabled = false;
@@ -657,7 +657,7 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
             } else {
                 showToast("Invalid OTP!", true);
                 otpInput.classList.add('glow-error');
-                otpInput.value = ""; // Clear box
+                otpInput.value = ""; 
                 setTimeout(() => otpInput.classList.remove('glow-error'), 1000);
             }
         }
@@ -716,7 +716,7 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
                 if (data.success) {
                     showToast("Password Reset Successful!");
                     setTimeout(() => {
-                        window.location.reload(); // Form reset karan layi reload kitta
+                        window.location.reload(); 
                     }, 1500);
                 } else {
                     showToast(data.message, true);
