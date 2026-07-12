@@ -7,7 +7,6 @@
     <title>ReSell - Product Details</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="favicon.svg">
-
     <style>
         :root {
             --nav-bg: #ffffff;
@@ -275,20 +274,6 @@
             font-weight: 900;
         }
 
-        .title-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 25px;
-        }
-
-        .product-name {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-muted);
-            flex: 1;
-        }
-
         .seller-actions {
             display: flex;
             gap: 10px;
@@ -312,6 +297,20 @@
         .delete-btn:hover {
             background: #ef4444;
             color: white;
+        }
+
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .product-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-muted);
+            flex: 1;
         }
 
         .meta-info {
@@ -458,7 +457,106 @@
         }
 
         /* =========================================
-           TOAST NOTIFICATION STYLES (NAVA)
+           CUSTOM MODERN MODAL POPUP STYLES
+           ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 17, 32, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .custom-modal {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .custom-modal {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            font-size: 45px;
+            color: #ef4444;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--body-text);
+        }
+
+        .modal-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn-cancel {
+            background: var(--body-bg);
+            color: var(--body-text);
+            border: 1px solid var(--card-border);
+        }
+
+        .modal-btn-cancel:hover {
+            background: var(--card-border);
+        }
+
+        .modal-btn-confirm {
+            background: #ef4444;
+            color: white;
+        }
+
+        .modal-btn-confirm:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* =========================================
+           TOAST NOTIFICATION STYLES
            ========================================= */
         #toast {
             visibility: hidden;
@@ -487,7 +585,7 @@
         }
 
         /* =========================================
-           RESPONSIVE MEDIA QUERIES (NAVA)
+           RESPONSIVE MEDIA QUERIES
            ========================================= */
         @media (max-width: 992px) {
             .container {
@@ -562,18 +660,15 @@
 </head>
 
 <body>
-
     <nav class="navbar">
         <a href="index" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
         <a href="index" class="logo"><i class="fas fa-shopping-basket"></i>
             <div>RE<span>SELL</span></div>
         </a>
     </nav>
-
     <div class="container">
         <div class="image-gallery">
             <div class="main-image-box">
-
                 <div class="actions-overlay">
                     <button class="icon-btn share" title="Share Product" onclick="shareProduct()">
                         <i class="fas fa-share-alt"></i>
@@ -583,45 +678,36 @@
                         <i class="far fa-heart" id="wishlistIcon"></i>
                     </button>
                 </div>
-
                 <button class="carousel-btn left-btn" onclick="prevImage()"><i class="fas fa-chevron-left"></i></button>
                 <button class="carousel-btn right-btn" onclick="nextImage()"><i
                         class="fas fa-chevron-right"></i></button>
-
                 <img id="mainImage" src="" alt="Product Image">
             </div>
-
             <div class="thumbnail-list" id="thumbList"></div>
-
             <div class="desc-box">
                 <h3 class="desc-title">Description</h3>
                 <p class="desc-text" id="productDesc"></p>
             </div>
         </div>
-
         <div class="info-panel">
             <div class="info-card">
-
                 <div class="price-row">
                     <div class="price-tag" id="prodPrice"></div>
-
                     <div class="seller-actions" id="sellerActions" style="display: none;">
+                        <!-- CHANGED THE ONCLICK FUNCTION TO OPEN OUR NEW MODAL -->
                         <button class="action-icon delete-btn" id="btnDelete" title="Delete Product"
-                            onclick="deleteProduct()"><i class="fas fa-trash-alt"></i></button>
+                            onclick="openDeleteModal()"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
-
                 <div class="title-row">
                     <div class="product-name" id="prodTitle"></div>
                 </div>
-
                 <div class="meta-info">
                     <span><i class="fas fa-map-marker-alt" style="color:var(--primary-green)"></i> <span
                             id="prodLoc"></span></span>
                     <span id="prodDate"></span>
                 </div>
             </div>
-
             <div class="info-card">
                 <div class="seller-heading">Seller Description</div>
                 <div class="seller-profile">
@@ -631,9 +717,7 @@
                         <p>ReSell Certified Seller</p>
                     </div>
                 </div>
-
                 <button class="chat-btn" id="chatBtn">Loading...</button>
-
                 <div class="contact-options" id="contactOptions" style="display: none;">
                     <a href="#" class="contact-link contact-phone" id="phoneLink">
                         <i class="fas fa-phone-alt fa-flip-horizontal"></i>
@@ -648,7 +732,19 @@
                         <span id="dispEmail">Email Seller</span>
                     </a>
                 </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- CUSTOM MODERN MODAL FOR DELETE CONFIRMATION -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="custom-modal">
+            <div class="modal-icon"><i class="fas fa-exclamation-circle"></i></div>
+            <div class="modal-title">Delete Product?</div>
+            <div class="modal-text">Are you sure you want to delete this product? This action cannot be undone.</div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="modal-btn modal-btn-confirm" onclick="deleteProduct()">Delete</button>
             </div>
         </div>
     </div>
@@ -678,7 +774,7 @@
         // CAROUSEL & ANIMATION LOGIC
         // ==============================
         function startAutoSlide() {
-            slideInterval = setInterval(nextImage, 5000); // 5 seconds
+            slideInterval = setInterval(nextImage, 5000);
         }
 
         function resetAutoSlide() {
@@ -693,7 +789,6 @@
                 imgElement.src = imagesArray[currentImgIndex];
                 imgElement.style.opacity = 1;
             }, 200);
-
             const thumbs = document.querySelectorAll('.thumb-box');
             thumbs.forEach((t, index) => {
                 if (index === currentImgIndex) t.classList.add('active');
@@ -737,17 +832,14 @@
                 showToast("Please login to add products to your wishlist!", true);
                 return;
             }
-
             const btn = document.getElementById('wishlistBtn');
             const icon = document.getElementById('wishlistIcon');
-
             try {
                 const response = await fetch('/api/toggle-wishlist', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: userEmail, productId: currentProdId })
                 });
-
                 const data = await response.json();
                 if (data.success) {
                     if (data.action === 'added') {
@@ -771,7 +863,6 @@
         async function checkWishlistStatus() {
             const userEmail = localStorage.getItem('userEmail');
             if (!userEmail) return;
-
             try {
                 const response = await fetch('/api/check-wishlist', {
                     method: 'POST',
@@ -779,7 +870,6 @@
                     body: JSON.stringify({ email: userEmail, productId: currentProdId })
                 });
                 const data = await response.json();
-
                 if (data.success && data.inWishlist) {
                     const btn = document.getElementById('wishlistBtn');
                     const icon = document.getElementById('wishlistIcon');
@@ -796,20 +886,17 @@
         document.addEventListener('DOMContentLoaded', () => {
             const productData = localStorage.getItem('currentProduct');
             if (!productData) return window.location.href = 'index';
-
             const p = JSON.parse(productData);
             currentProdId = p._id;
 
-            document.getElementById('prodPrice').innerText = '₹ ' + Number(p.price).toLocaleString('en-IN');
+            document.getElementById('prodPrice').innerText = '  ' + Number(p.price).toLocaleString('en-IN');
             document.getElementById('prodTitle').innerText = p.title;
             document.getElementById('prodLoc').innerText = p.loc;
             document.getElementById('prodDate').innerText = p.date;
             document.getElementById('productDesc').innerText = p.desc || 'No description provided.';
 
-            // Image Setup
             imagesArray = p.images && p.images.length > 0 ? p.images : [p.img];
             document.getElementById('mainImage').src = imagesArray[0];
-
             const thumbList = document.getElementById('thumbList');
             imagesArray.forEach((imgSrc, index) => {
                 thumbList.innerHTML += `
@@ -820,12 +907,10 @@
 
             if (imagesArray.length > 1) startAutoSlide();
 
-            // Seller Info
             const sellerName = p.sellerName || 'Anonymous';
             document.getElementById('sellerName').innerText = sellerName;
             document.getElementById('sellerAvatar').innerText = sellerName.charAt(0);
 
-            // Chat & Contact Logic
             const currentUser = localStorage.getItem('userName');
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             const chatBtn = document.getElementById('chatBtn');
@@ -847,10 +932,8 @@
                             chatBtn.innerHTML = 'Contact Seller <i class="fas fa-chevron-down" style="font-size: 14px;"></i>';
                         }
                     };
-
                     document.getElementById('dispPhone').innerText = p.phone || 'N/A';
                     document.getElementById('phoneLink').href = `tel:${p.phone}`;
-
                     document.getElementById('dispWA').innerText = p.altPhone || 'N/A';
                     document.getElementById('whatsappLink').href = `https://wa.me/91${p.altPhone}`;
 
@@ -870,32 +953,37 @@
             }
         });
 
-        // ==============================
-        // Delete Logic (MongoDB)
-        // ==============================
-        window.deleteProduct = async function () {
-            // Native browser confirm is safer for deletions to avoid accidental clicks
-            if (confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
-                try {
-                    const response = await fetch('/api/delete-product', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: currentProdId })
-                    });
-                    const data = await response.json();
+        // ==========================================
+        // CUSTOM MODAL CONTROLS (NEW UI POPUP)
+        // ==========================================
+        window.openDeleteModal = function () {
+            document.getElementById('deleteModal').classList.add('active');
+        };
 
-                    if (data.success) {
-                        showToast("Product deleted successfully!");
-                        // Thoda wait karke redirect karo taaki toast dikh sake
-                        setTimeout(() => {
-                            window.location.href = 'index';
-                        }, 1500);
-                    } else {
-                        showToast("Failed to delete product.", true);
-                    }
-                } catch (err) {
-                    showToast("Server error! Cannot delete product.", true);
+        window.closeDeleteModal = function () {
+            document.getElementById('deleteModal').classList.remove('active');
+        };
+
+        // Custom Delete Logic (Bina default browser alert de)
+        window.deleteProduct = async function () {
+            closeDeleteModal(); // Overlay kardo close
+            try {
+                const response = await fetch('/api/delete-product', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: currentProdId })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast("Product deleted successfully!");
+                    setTimeout(() => {
+                        window.location.href = 'index';
+                    }, 1500);
+                } else {
+                    showToast("Failed to delete product.", true);
                 }
+            } catch (err) {
+                showToast("Server error! Cannot delete product.", true);
             }
         };
     </script>
