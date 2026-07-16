@@ -499,11 +499,10 @@
         // Auth Check
         const userName = localStorage.getItem('userName');
         if (localStorage.getItem('isLoggedIn') !== 'true' || !userName) {
-            // Toast will not be able to redirect properly here before user sees it on first load, so standard alert is okay or immediate redirect
             window.location.href = 'login';
         }
 
-        // Image Compression
+        // Image Compression & Validation
         const fileInput = document.getElementById('fileInput');
         const previewContainer = document.getElementById('previewContainer');
         const dropZone = document.getElementById('dropZone');
@@ -534,8 +533,15 @@
         }
 
         fileInput.addEventListener('change', function (e) {
-            const files = Array.from(e.target.files);
+            let files = Array.from(e.target.files);
             dropZone.classList.remove('error-border');
+
+            // Maximum 5 images check
+            if (selectedFiles.length + files.length > 5) {
+                showToast("Maximum 5 images allowed!", true);
+                // Allow only up to 5 total files
+                files = files.slice(0, 5 - selectedFiles.length); 
+            }
 
             files.forEach(file => {
                 if (selectedFiles.length >= 5) return;
@@ -558,9 +564,16 @@
         document.getElementById('sellForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
+            // Minimum 1 image check
             if (selectedFiles.length === 0) {
                 dropZone.classList.add('error-border');
                 showToast("Please upload at least 1 image!", true);
+                return;
+            }
+
+            // Extra validation just in case
+            if (selectedFiles.length > 5) {
+                showToast("Maximum 5 images allowed!", true);
                 return;
             }
 
@@ -603,7 +616,6 @@
 
                 if (data.success) {
                     showToast("Product successfully added! Redirecting...");
-                    // Thoda delay taaki user toast message padh sake
                     setTimeout(() => {
                         window.location.href = "index";
                     }, 1500);
